@@ -1,38 +1,20 @@
-# stock_multi_agent/agents/ticker_analysis.py
-
-# This agent synthesizes information from price data and news.
-# It does NOT make direct external API calls for new data.
-# It could be enhanced to use an LLM for more sophisticated sentiment analysis or summary generation.
-
 def analyze_stock(ticker: str, current_price: float, price_change: float, news_headlines: list[str]) -> str:
-    """
-    Analyzes stock price and news to provide insights.
 
-    Args:
-        ticker (str): The stock ticker symbol.
-        current_price (float): The current price of the stock.
-        price_change (float): The percentage change in stock price.
-        news_headlines (list[str]): A list of news headlines related to the stock.
-
-    Returns:
-        str: A summary analysis of the stock.
-    """
     if not ticker:
         return "Cannot analyze stock without a ticker."
 
     analysis_parts = [f"Comprehensive Stock Analysis for {ticker}:"]
 
-    # --- Price Analysis ---
-    if price_change > 0.5: # Significant rise
+    if price_change > 0.5: 
         analysis_parts.append(f"The stock has seen a notable increase of {price_change:.2f}% today, currently trading at ${current_price:.2f}.")
-    elif price_change < -0.5: # Significant fall
+    elif price_change < -0.5: 
         analysis_parts.append(f"The stock has experienced a significant drop of {abs(price_change):.2f}% today, now at ${current_price:.2f}.")
-    elif price_change != 0: # Minor fluctuation (between -0.5% and +0.5%, excluding 0)
+    elif price_change != 0: 
         analysis_parts.append(f"The stock is showing a slight movement of {price_change:.2f}% today, with the current price at ${current_price:.2f}.")
-    else: # Stable
+    else: 
         analysis_parts.append(f"The stock price for {ticker} is stable today, holding at ${current_price:.2f}.")
 
-    # --- News Analysis (simple keyword-based sentiment) ---
+   
     positive_keywords = ["gain", "rise", "grow", "expansion", "record", "strong", "beats", "innovat", "launch", "partnership", "success", "optimistic", "acquisition", "revenue", "profit"]
     negative_keywords = ["fall", "drop", "decline", "loss", "misses", "warns", "delay", "investigation", "scandal", "lawsuit", "competition", "regulatory", "downgrade", "concerns", "challenges"]
 
@@ -49,7 +31,7 @@ def analyze_stock(ticker: str, current_price: float, price_change: float, news_h
             positive_news_count += 1
         elif is_negative and not is_positive:
             negative_news_count += 1
-        else: # Either both positive and negative, or neither
+        else: 
             neutral_or_mixed_news_count += 1
 
     if news_headlines:
@@ -66,7 +48,7 @@ def analyze_stock(ticker: str, current_price: float, price_change: float, news_h
 
         analysis_parts.append("\n--- Key Headlines ---")
         if news_headlines:
-            # List up to the top 3 headlines for brevity
+           
             for i, headline in enumerate(news_headlines[:3]):
                 analysis_parts.append(f"  - {headline}")
         else:
@@ -74,7 +56,7 @@ def analyze_stock(ticker: str, current_price: float, price_change: float, news_h
     else:
         analysis_parts.append("\nNo recent news headlines available for sentiment analysis.")
 
-    # --- Concluding Remark based on combined sentiment ---
+   
     analysis_parts.append("\n--- Overall Conclusion ---")
     if price_change < -0.5 and negative_news_count > positive_news_count:
         analysis_parts.append(f"The significant decline in {ticker} stock price today appears to be strongly correlated with recent negative news developments.")
