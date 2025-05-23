@@ -1,19 +1,7 @@
-# stock_multi_agent/agents/ticker_price.py
-
 import requests
 import os
 
 def get_current_stock_price(ticker: str) -> float:
-    """
-    Fetches the current stock price for a given ticker symbol using Alpha Vantage.
-
-    Args:
-        ticker (str): The stock ticker symbol (e.g., "TSLA").
-
-    Returns:
-        float: The current price of the stock.
-               Returns 0.0 if the price cannot be fetched or an error occurs.
-    """
     if not ticker:
         print("Error: Ticker symbol is empty for price fetching.")
         return 0.0
@@ -23,12 +11,11 @@ def get_current_stock_price(ticker: str) -> float:
         print("ALPHA_VANTAGE_API_KEY not found in environment variables.")
         return 0.0
 
-    # Alpha Vantage API endpoint for Global Quote
     url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={api_key}"
 
     try:
         response = requests.get(url)
-        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status() 
         data = response.json()
 
         if "Error Message" in data:
