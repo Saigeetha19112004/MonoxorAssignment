@@ -1,21 +1,8 @@
-# stock_multi_agent/agents/ticker_price_change.py
-
 import requests
 import os
 from datetime import datetime, timedelta
 
 def get_price_change(ticker: str) -> float:
-    """
-    Calculates the daily percentage price change for a given stock ticker
-    using Alpha Vantage historical daily time series data.
-
-    Args:
-        ticker (str): The stock ticker symbol (e.g., "TSLA").
-
-    Returns:
-        float: The percentage change in stock price (e.g., -2.5 for a 2.5% fall).
-               Returns 0.0 if the price change cannot be determined.
-    """
     if not ticker:
         print("Error: Ticker symbol is empty for price change calculation.")
         return 0.0
@@ -25,13 +12,11 @@ def get_price_change(ticker: str) -> float:
         print("ALPHA_VANTAGE_API_KEY not found in environment variables.")
         return 0.0
 
-    # Alpha Vantage API endpoint for Daily Time Series
-    # 'outputsize=compact' gets the last 100 data points.
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&outputsize=compact&apikey={api_key}"
 
     try:
         response = requests.get(url)
-        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status() 
         data = response.json()
 
         if "Error Message" in data:
@@ -42,14 +27,13 @@ def get_price_change(ticker: str) -> float:
             return 0.0
 
         time_series = data["Time Series (Daily)"]
-        # Sort dates descending to easily get the most recent two trading days
         dates = sorted(time_series.keys(), reverse=True)
 
         if len(dates) < 2:
             print(f"Not enough historical data ({len(dates)} days) to calculate price change for {ticker}.")
             return 0.0
 
-        # Get data for the most recent two available trading days
+  
         today_date_str = dates[0]
         yesterday_date_str = dates[1]
 
@@ -59,8 +43,6 @@ def get_price_change(ticker: str) -> float:
         if not today_data or not yesterday_data:
             print(f"Missing data for today ({today_date_str}) or yesterday ({yesterday_date_str}) for {ticker}.")
             return 0.0
-
-        # Extract closing prices
         today_close_str = today_data.get("4. close")
         yesterday_close_str = yesterday_data.get("4. close")
 
